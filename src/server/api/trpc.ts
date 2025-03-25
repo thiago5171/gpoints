@@ -9,8 +9,10 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { getServerSession } from "next-auth";
 
 import { db } from "@/server/db";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
  * 1. CONTEXT
@@ -25,8 +27,11 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const session = await getServerSession(authOptions);
+
   return {
     db,
+    session,
     ...opts,
   };
 };
@@ -104,3 +109,17 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const protectedProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(({ ctx, next }) => {
+    if (!ctx.session?.user) {
+      throw new Error("Não autenticado");
+    }
+    return next({
+      ctx: {
+        ...ctx,
+        session: ctx.session,
+      },
+    });
+  });

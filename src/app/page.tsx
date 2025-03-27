@@ -1,6 +1,6 @@
-import { LatestPost } from "@/app/_components/post";
+import { LatestPost } from "@/components/post";
+import { UserCreate } from "@/components/postcreate";
 import { api, HydrateClient } from "@/trpc/server";
-import { UserCreate } from "./_components/postcreate";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });

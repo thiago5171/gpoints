@@ -1,9 +1,10 @@
 import React from "react";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Providers } from "@/app/api/auth/providers";
-import Roles from "@/types/role";
+//import Roles from "@/types/role";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+//import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Definição das cores do tema personalizado
 /*
@@ -40,9 +41,9 @@ export default function EmpresaLayout({
   return (
     <TRPCReactProvider>
       <Providers>
-        {/* <ProtectedRoute allowedRoles={[]}> */}
-        <AntdRegistry>{children}</AntdRegistry>
-        {/* </ProtectedRoute> */}
+        <ProtectedRoute allowedRoles={["OWNER"]}>
+          <AntdRegistry>{children}</AntdRegistry>
+        </ProtectedRoute>
       </Providers>
     </TRPCReactProvider>
   );

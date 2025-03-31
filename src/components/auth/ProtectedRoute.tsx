@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import ThemeConfig from "../theme/themeConfig";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -31,19 +32,33 @@ export function ProtectedRoute({
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div
+        className="flex min-h-screen items-center justify-center"
+        style={{
+          backgroundColor: "transparent",
+          background: "var(--background-color)",
+        }}
+      >
         <div className="text-lg">Carregando...</div>
       </div>
     );
   }
 
   if (!session) {
-    return null;
+    return (
+      <ThemeConfig>
+        <div />
+      </ThemeConfig>
+    );
   }
 
   if (allowedRoles && !allowedRoles.includes(session.user.role)) {
-    return null;
+    return (
+      <ThemeConfig>
+        <div />
+      </ThemeConfig>
+    );
   }
 
-  return <>{children}</>;
+  return <ThemeConfig>{children}</ThemeConfig>;
 }

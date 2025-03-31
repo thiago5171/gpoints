@@ -2,8 +2,9 @@ import React from "react";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Providers } from "@/app/api/auth/providers";
 //import Roles from "@/types/role";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import Roles from "@/types/role";
+import { ThemeProvider } from "@/components/theme/themeContext";
 //import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Definição das cores do tema personalizado
@@ -39,12 +40,25 @@ export default function EmpresaLayout({
   children: React.ReactNode;
 }) {
   return (
-    <TRPCReactProvider>
-      <Providers>
-        <ProtectedRoute allowedRoles={["OWNER"]}>
-          <AntdRegistry>{children}</AntdRegistry>
-        </ProtectedRoute>
-      </Providers>
-    </TRPCReactProvider>
+    <body>
+      <ThemeProvider>
+        <TRPCReactProvider>
+          <Providers>
+            <div
+              style={{
+                minHeight: "100vh",
+                background: "var(--background-color)",
+              }}
+            >
+              <ProtectedRoute
+                allowedRoles={[Roles.OWNER, Roles.ADMIN, Roles.EMPLOYEE]}
+              >
+                <Providers>{children}</Providers>
+              </ProtectedRoute>{" "}
+            </div>
+          </Providers>
+        </TRPCReactProvider>
+      </ThemeProvider>
+    </body>
   );
 }

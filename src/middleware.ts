@@ -43,15 +43,7 @@ export default withAuth(
 // Configurar quais rotas serão protegidas
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/owner/:path*",
-    "/employee/:path*",
-    "/profile/:path*",
-    "/login",
-    "/empresa/:path*",
-    "/empresa",
-    "/auth-test",
-    "/auth-test/:path*",
+
+    
   ],
 };

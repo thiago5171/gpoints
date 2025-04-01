@@ -1,7 +1,8 @@
 import { theme } from "antd";
+import type { ThemeConfig } from "antd"; // Use "type" para importar apenas como tipo
 
-export const lightTheme = {
-  algorithm: theme.getDesignToken,
+export const lightTheme: ThemeConfig = {
+  algorithm: theme.defaultAlgorithm,
 
   token: {
     // Cores principais - Tema Claro
@@ -59,7 +60,7 @@ export const lightTheme = {
   },
 };
 
-export const darkTheme = {
+export const darkTheme: ThemeConfig = {
   algorithm: theme.darkAlgorithm,
 
   token: {
@@ -76,7 +77,6 @@ export const darkTheme = {
     colorText: "#F9FAFB",
     colorTextSecondary: "#D1D5DB",
     colorBorder: "#374151",
-    colorItemBg: "#ef4444",
     colorTextBase: "#ff8686",
 
     // Ajustes de componentes

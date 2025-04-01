@@ -2,7 +2,6 @@ import * as z from "zod";
 import { hash } from "argon2";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import Roles from "@/types/role";
-import { companyRouter } from "./campany";
 
 export const loginSchema = z.object({
   email: z.string().email(),

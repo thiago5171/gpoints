@@ -12,7 +12,7 @@ import { ZodError } from "zod";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/server/db";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 /**
  * 1. CONTEXT

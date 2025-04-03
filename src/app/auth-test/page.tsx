@@ -55,6 +55,7 @@ export default function AuthTestPage() {
         setError("Erro desconhecido");
       }
     } finally {
+      console.error("Erro ao fazer login:");
       setLoading(false);
     }
   };
@@ -74,13 +75,25 @@ export default function AuthTestPage() {
         setError("Erro desconhecido");
       }
     } finally {
+      console.error("Erro ao registrar usuário:");
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    setSuccessMessage("Logout realizado com sucesso!");
+    try {
+      await signOut({ redirect: false });
+      setSuccessMessage("Logout realizado com sucesso!");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro desconhecido");
+      }
+    } finally {
+      setLoading(false);
+      console.error("Erro ao fazer logout:");
+    }
   };
 
   return (

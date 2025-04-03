@@ -47,7 +47,7 @@ export function ProtectedRoute({
   if (!session) {
     return (
       <ThemeConfig>
-        <div />
+        <div></div>
       </ThemeConfig>
     );
   }

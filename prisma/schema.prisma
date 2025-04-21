@@ -20,11 +20,14 @@ model Post {
 }
 
 model Company {
-    id        Int       @id @default(autoincrement())
-    name      String
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime? // Deleção lógica
+    id                 Int          @id @default(autoincrement())
+    name               String
+    logoUrl            String? // Novo
+    themeColor         String? // Novo
+    defaultLoyaltyType LoyaltyType? // Novo
+    createdAt          DateTime     @default(now())
+    updatedAt          DateTime     @updatedAt
+    deletedAt          DateTime?
 
     branches    Branch[]
     employees   Employee[]
@@ -36,6 +39,9 @@ model Company {
 model Branch {
     id        Int       @id @default(autoincrement())
     name      String
+    address   String? // Novo
+    city      String? // Novo
+    zipcode   String? // Novo
     companyId Int
     company   Company   @relation(fields: [companyId], references: [id])
     createdAt DateTime  @default(now())
@@ -49,7 +55,7 @@ model Employee {
     id        Int       @id @default(autoincrement())
     name      String
     email     String    @unique
-    phone     String? // Opcional
+    phone     String?
     branchId  Int?
     branch    Branch?   @relation(fields: [branchId], references: [id])
     companyId Int
@@ -58,24 +64,24 @@ model Employee {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    loyaltyCardsStamped LoyaltyCardStamp[] // Carimbos adicionados por esse funcionário
-    rewardsProcessed    RewardRedemption[] // Prêmios resgatados por esse funcionário
+    loyaltyCardsStamped LoyaltyCardStamp[]
+    rewardsProcessed    RewardRedemption[]
     User                User[]
 }
 
 model Customer {
-    id         Int     @id @default(autoincrement())
+    id         Int       @id @default(autoincrement())
     name       String
-    email      String? @unique // Opcional
-    phone      String? @unique // Opcional
-    accessLink String  @unique // Link gerado para acesso via QR Code, WhatsApp ou e-mail
-
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime?
+    email      String?   @unique
+    phone      String?   @unique
+    accessLink String    @unique
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    deletedAt  DateTime?
 
     loyaltyCards     LoyaltyCard[]
     RewardRedemption RewardRedemption[]
+    LogsError        LogsError[] // Novo
 }
 
 model LoyaltyCard {
@@ -84,9 +90,10 @@ model LoyaltyCard {
     customer   Customer    @relation(fields: [customerId], references: [id])
     companyId  Int
     company    Company     @relation(fields: [companyId], references: [id])
-    type       LoyaltyType // POINTS ou STAMPS
-    goal       Int // Pontos ou número de carimbos necessários para o prêmio
-    current    Int         @default(0) // Progresso do cliente
+    type       LoyaltyType
+    goal       Int
+    current    Int         @default(0)
+    isActive   Boolean     @default(true) // Novo
     createdAt  DateTime    @default(now())
     updatedAt  DateTime    @updatedAt
     deletedAt  DateTime?
@@ -95,12 +102,13 @@ model LoyaltyCard {
 }
 
 model LoyaltyCardStamp {
-    id            Int         @id @default(autoincrement())
-    loyaltyCardId Int
-    loyaltyCard   LoyaltyCard @relation(fields: [loyaltyCardId], references: [id])
-    employeeId    Int
-    employee      Employee    @relation(fields: [employeeId], references: [id])
-    createdAt     DateTime    @default(now())
+    id             Int         @id @default(autoincrement())
+    loyaltyCardId  Int
+    loyaltyCard    LoyaltyCard @relation(fields: [loyaltyCardId], references: [id])
+    employeeId     Int
+    employee       Employee    @relation(fields: [employeeId], references: [id])
+    purchaseAmount Float? // Novo: valor da compra relacionada
+    createdAt      DateTime    @default(now())
 }
 
 model Reward {
@@ -110,6 +118,9 @@ model Reward {
     companyId        Int
     company          Company            @relation(fields: [companyId], references: [id])
     pointsRequired   Int
+    type             LoyaltyType? // Novo: diferenciar se é para pontos ou carimbos
+    stock            Int? // Novo: total disponível
+    available        Boolean? // Novo: se ainda está disponível para resgate
     createdAt        DateTime           @default(now())
     updatedAt        DateTime           @updatedAt
     deletedAt        DateTime?
@@ -122,9 +133,38 @@ model RewardRedemption {
     customer   Customer @relation(fields: [customerId], references: [id])
     rewardId   Int
     reward     Reward   @relation(fields: [rewardId], references: [id])
-    employeeId Int // Funcionário que confirmou o resgate
+    employeeId Int
     employee   Employee @relation(fields: [employeeId], references: [id])
     createdAt  DateTime @default(now())
+}
+
+model User {
+    id             String      @id @default(uuid())
+    name           String?
+    email          String?     @unique
+    password       String?
+    hasFirstAccess Boolean?    @default(true)
+    role           UserRole
+    companyId      Int?
+    company        Company?    @relation(fields: [companyId], references: [id])
+    employeeId     Int?
+    employee       Employee?   @relation(fields: [employeeId], references: [id])
+    createdAt      DateTime    @default(now())
+    updatedAt      DateTime    @updatedAt
+    LogsError      LogsError[] // Novo
+}
+
+model LogsError {
+    id         Int       @id @default(autoincrement())
+    message    String
+    stackTrace String? // Novo
+    method     String
+    page       String
+    userId     String? // Novo
+    customerId Int? // Novo
+    createdAt  DateTime  @default(now())
+    User       User?     @relation(fields: [userId], references: [id])
+    Customer   Customer? @relation(fields: [customerId], references: [id])
 }
 
 enum LoyaltyType {
@@ -132,33 +172,8 @@ enum LoyaltyType {
     STAMPS
 }
 
-model User {
-    id         String    @id @default(uuid())
-    name       String?
-    email      String?   @unique
-    password   String?
-    role       UserRole
-    companyId  Int?
-    company    Company?  @relation(fields: [companyId], references: [id])
-    employee   Employee? @relation(fields: [employeeId], references: [id])
-    session    Session?  @relation(fields: [sessionId], references: [id])
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime  @updatedAt
-    employeeId Int?
-    sessionId  String?
-}
-
-model Session {
-    id        String   @id @default(uuid())
-    token     String
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    User      User[]
-}
-
 enum UserRole {
-    ADMIN // Controle total do sistema
-    OWNER // Dono de empresa
-    EMPLOYEE // Funcionário da empresa
+    ADMIN
+    OWNER
+    EMPLOYEE
 }

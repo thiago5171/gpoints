@@ -18,8 +18,7 @@ export const lightTheme: ThemeConfig = {
     colorText: "#1E293B",
     colorTextSecondary: "#64748B",
     colorBorder: "#E2E8F0",
-    colorBgBase: "#ef4444", // VER PQ N FUNFA
-    colorTextBase: "#ff8686", // VER PQ N FUNFA
+    // VER PQ N FUNFA
 
     // Ajustes de componentes
     borderRadius: 8,
